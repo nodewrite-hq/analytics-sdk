@@ -1,0 +1,12 @@
+{
+  "name": "playground",
+  "private": true,
+  "type": "module",
+  "description": "Local analytics playground on port 4317. Uses Postgres when DATABASE_URL is set, and an in-memory store otherwise.",
+  "scripts": {
+    "dev": "pnpm -w build && node build.mjs && node --experimental-strip-types server.ts"
+  },
+  "dependencies": {
+    "@nodewrite/analytics-sdk": "workspace:*"
+  }
+}

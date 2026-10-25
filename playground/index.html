@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Analytics playground</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: system-ui, sans-serif;
+        line-height: 1.5;
+      }
+      body {
+        margin: 0;
+        background: #f6f5f2;
+        color: #1c1915;
+      }
+      main {
+        box-sizing: border-box;
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem;
+      }
+      button {
+        font: inherit;
+        padding: 0.65rem 1rem;
+        border: 1px solid #1c1915;
+        border-radius: 0.4rem;
+        background: #1c1915;
+        color: #f6f5f2;
+        cursor: pointer;
+      }
+      button:focus-visible {
+        outline: 2px solid #1c1915;
+        outline-offset: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Analytics playground</h1>
+      <p>Opening this page records a view. The button records a named click.</p>
+      <button type="button" data-analytics="cta_clicked">Continue</button>
+    </main>
+    <script type="module" src="/page.js"></script>
+  </body>
+</html>
