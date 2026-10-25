@@ -2,8 +2,6 @@
 
 Records page views and named clicks. The browser sends an event. The server checks it and writes it through a store. Country and city come from the caller. A value on the JSON body is ignored.
 
-The npm package is restricted. `npm install @nodewrite-labs/analytics-sdk` needs an account that can read it.
-
 `payload` and `pg` are optional peer dependencies. Install one only when that entry is used.
 
 ## Entries

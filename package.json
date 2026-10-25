@@ -1,9 +1,9 @@
 {
   "name": "@nodewrite-labs/analytics-sdk",
   "version": "0.1.0",
-  "description": "Private analytics SDK for page views and named clicks, with Postgres storage and a Payload admin screen.",
+  "description": "Analytics SDK for page views and named clicks, with Postgres storage and a Payload admin screen.",
   "publishConfig": {
-    "access": "restricted"
+    "access": "public"
   },
   "packageManager": "pnpm@12.11.2",
   "engines": {
