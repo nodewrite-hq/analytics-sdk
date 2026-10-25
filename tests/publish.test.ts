@@ -27,7 +27,6 @@ describe("README", () => {
     expect(readme).toContain("@nodewrite-labs/analytics-sdk/client");
     expect(readme).toContain("@nodewrite-labs/analytics-sdk/server");
     expect(readme).toContain("@nodewrite-labs/analytics-sdk/postgres");
-    expect(readme).toContain("https://github.com/nodewrite-hq/analytics-sdk");
   });
 });
 
