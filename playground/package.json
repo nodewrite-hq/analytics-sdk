@@ -7,6 +7,6 @@
     "dev": "pnpm -w build && node build.mjs && node --experimental-strip-types server.ts"
   },
   "dependencies": {
-    "@nodewrite/analytics-sdk": "workspace:*"
+    "@nodewrite-labs/analytics-sdk": "workspace:*"
   }
 }

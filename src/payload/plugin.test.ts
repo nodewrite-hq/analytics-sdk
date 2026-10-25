@@ -44,14 +44,14 @@ describe("analyticsPlugin", () => {
     });
     expect(next.admin?.components?.views?.analytics).toEqual({
       Component: {
-        path: "@nodewrite/analytics-sdk/payload/admin-view",
+        path: "@nodewrite-labs/analytics-sdk/payload/admin-view",
         exportName: "AnalyticsAdminView",
       },
       path: "/analytics",
     });
     expect(next.admin?.components?.afterNavLinks).toEqual([
       { path: "app/link", exportName: "ExistingLink" },
-      { path: "@nodewrite/analytics-sdk/payload/nav-link", exportName: "AnalyticsNavLink" },
+      { path: "@nodewrite-labs/analytics-sdk/payload/nav-link", exportName: "AnalyticsNavLink" },
     ]);
     expect(next.custom).toMatchObject({
       site: "client",

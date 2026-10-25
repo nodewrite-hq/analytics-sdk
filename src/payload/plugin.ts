@@ -26,7 +26,7 @@ export function analyticsPlugin(
             ...components.views,
             analytics: {
               Component: {
-                path: "@nodewrite/analytics-sdk/payload/admin-view",
+                path: "@nodewrite-labs/analytics-sdk/payload/admin-view",
                 exportName: "AnalyticsAdminView",
               },
               path: "/analytics",
@@ -35,7 +35,7 @@ export function analyticsPlugin(
           afterNavLinks: [
             ...(components.afterNavLinks ?? []),
             {
-              path: "@nodewrite/analytics-sdk/payload/nav-link",
+              path: "@nodewrite-labs/analytics-sdk/payload/nav-link",
               exportName: "AnalyticsNavLink",
             },
           ],

@@ -1,8 +1,8 @@
-# @nodewrite/analytics-sdk
+# @nodewrite-labs/analytics-sdk
 
 Records page views and named clicks. The browser sends an event. The server checks it and writes it through a store. Country and city come from the caller. A value on the JSON body is ignored.
 
-The npm package is restricted. `npm install @nodewrite/analytics-sdk` needs an account that can read it.
+The npm package is restricted. `npm install @nodewrite-labs/analytics-sdk` needs an account that can read it.
 
 `payload` and `pg` are optional peer dependencies. Install one only when that entry is used.
 
@@ -10,11 +10,11 @@ The npm package is restricted. `npm install @nodewrite/analytics-sdk` needs an a
 
 | Import                              | What it exports                                                                                           |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `@nodewrite/analytics-sdk`          | Event types, module flags, `AnalyticsEventStore`, `MemoryAnalyticsEventStore`, `summarizeAnalyticsEvents` |
-| `@nodewrite/analytics-sdk/client`   | `startAnalytics`, `recordNamedClick`                                                                      |
-| `@nodewrite/analytics-sdk/server`   | `recordAnalyticsEvent`, `readRequestGeo`                                                                  |
-| `@nodewrite/analytics-sdk/postgres` | `PostgresAnalyticsEventStore`, `schema.sql`                                                               |
-| `@nodewrite/analytics-sdk/payload`  | Payload collection, ingest, and admin screen                                                              |
+| `@nodewrite-labs/analytics-sdk`          | Event types, module flags, `AnalyticsEventStore`, `MemoryAnalyticsEventStore`, `summarizeAnalyticsEvents` |
+| `@nodewrite-labs/analytics-sdk/client`   | `startAnalytics`, `recordNamedClick`                                                                      |
+| `@nodewrite-labs/analytics-sdk/server`   | `recordAnalyticsEvent`, `readRequestGeo`                                                                  |
+| `@nodewrite-labs/analytics-sdk/postgres` | `PostgresAnalyticsEventStore`, `schema.sql`                                                               |
+| `@nodewrite-labs/analytics-sdk/payload`  | Payload collection, ingest, and admin screen                                                              |
 
 ## Events
 
@@ -35,7 +35,7 @@ A click is `{ type: "click", path, locale, sessionId, eventName }`. `eventName` 
 Call `startAnalytics` after the visitor has consented. `enabled: false` sends nothing.
 
 ```ts
-import { startAnalytics } from "@nodewrite/analytics-sdk/client";
+import { startAnalytics } from "@nodewrite-labs/analytics-sdk/client";
 
 startAnalytics({
   endpoint: "/analytics/events",
@@ -61,7 +61,7 @@ A named click is an element with `data-analytics`. The attribute value is the ev
 Pass `{ body, country, city }`, or `{ request, country, city }` when `request` is a Fetch `Request` and `body` is omitted. Country and city are those properties. `readRequestGeo` reads the same two properties.
 
 ```ts
-import { recordAnalyticsEvent } from "@nodewrite/analytics-sdk/server";
+import { recordAnalyticsEvent } from "@nodewrite-labs/analytics-sdk/server";
 
 const result = await recordAnalyticsEvent(
   { body, country, city },

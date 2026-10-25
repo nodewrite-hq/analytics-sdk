@@ -24,9 +24,9 @@ describe("README", () => {
     expect(readme).toContain("startAnalytics");
     expect(readme).toContain("recordAnalyticsEvent");
     expect(readme).toContain("schema.sql");
-    expect(readme).toContain("@nodewrite/analytics-sdk/client");
-    expect(readme).toContain("@nodewrite/analytics-sdk/server");
-    expect(readme).toContain("@nodewrite/analytics-sdk/postgres");
+    expect(readme).toContain("@nodewrite-labs/analytics-sdk/client");
+    expect(readme).toContain("@nodewrite-labs/analytics-sdk/server");
+    expect(readme).toContain("@nodewrite-labs/analytics-sdk/postgres");
     expect(readme).toContain("https://github.com/nodewrite-hq/analytics-sdk");
   });
 });

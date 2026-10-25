@@ -211,7 +211,7 @@ importers:
 
   playground:
     dependencies:
-      '@nodewrite/analytics-sdk':
+      '@nodewrite-labs/analytics-sdk':
         specifier: workspace:*
         version: link:..
 

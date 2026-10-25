@@ -1,4 +1,4 @@
-import { startAnalytics } from "@nodewrite/analytics-sdk/client";
+import { startAnalytics } from "@nodewrite-labs/analytics-sdk/client";
 
 startAnalytics({
   endpoint: "/analytics/events",

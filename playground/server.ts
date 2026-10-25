@@ -2,10 +2,10 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { MemoryAnalyticsEventStore } from "@nodewrite/analytics-sdk";
-import type { AnalyticsEventStore, AnalyticsModules, AnalyticsServerOptions } from "@nodewrite/analytics-sdk";
-import { applyAnalyticsSchema, PostgresAnalyticsEventStore } from "@nodewrite/analytics-sdk/postgres";
-import { recordAnalyticsEvent } from "@nodewrite/analytics-sdk/server";
+import { MemoryAnalyticsEventStore } from "@nodewrite-labs/analytics-sdk";
+import type { AnalyticsEventStore, AnalyticsModules, AnalyticsServerOptions } from "@nodewrite-labs/analytics-sdk";
+import { applyAnalyticsSchema, PostgresAnalyticsEventStore } from "@nodewrite-labs/analytics-sdk/postgres";
+import { recordAnalyticsEvent } from "@nodewrite-labs/analytics-sdk/server";
 
 const port = playgroundPort(process.env.PLAYGROUND_PORT);
 const root = dirname(fileURLToPath(import.meta.url));

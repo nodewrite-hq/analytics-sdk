@@ -1,5 +1,5 @@
 {
-  "name": "@nodewrite/analytics-sdk",
+  "name": "@nodewrite-labs/analytics-sdk",
   "version": "0.1.0",
   "description": "Private analytics SDK for page views and named clicks, with Postgres storage and a Payload admin screen.",
   "publishConfig": {
