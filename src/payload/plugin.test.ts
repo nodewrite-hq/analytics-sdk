@@ -51,7 +51,11 @@ describe("analyticsPlugin", () => {
     });
     expect(next.admin?.components?.afterNavLinks).toEqual([
       { path: "app/link", exportName: "ExistingLink" },
-      { path: "@nodewrite-labs/analytics-sdk/payload/nav-link", exportName: "AnalyticsNavLink" },
+      {
+        path: "@nodewrite-labs/analytics-sdk/payload/nav-link",
+        exportName: "AnalyticsNavLink",
+        clientProps: { href: "/admin/analytics" },
+      },
     ]);
     expect(next.custom).toMatchObject({
       site: "client",
@@ -60,5 +64,19 @@ describe("analyticsPlugin", () => {
     expect(next.collections?.find((collection) => collection.slug === "analytics-events")?.admin?.hidden).toBe(
       true,
     );
+  });
+
+  it("links the nav entry to the analytics view under the configured admin route", () => {
+    const next = analyticsPlugin({ enabled: true, modules })({
+      routes: { admin: "/administrator" },
+    } as unknown as Config);
+
+    expect(next.admin?.components?.afterNavLinks).toEqual([
+      {
+        path: "@nodewrite-labs/analytics-sdk/payload/nav-link",
+        exportName: "AnalyticsNavLink",
+        clientProps: { href: "/administrator/analytics" },
+      },
+    ]);
   });
 });

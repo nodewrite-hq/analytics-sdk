@@ -1,3 +1,4 @@
+import type { Payload, PayloadRequest } from "payload";
 import { describe, expect, it, vi } from "vitest";
 import type { AnalyticsModules } from "../core/options.js";
 import { MemoryAnalyticsEventStore } from "../core/memory-event-store.js";
@@ -55,9 +56,54 @@ describe("analytics endpoint", () => {
     expect(summary.byCountry).toEqual([]);
   });
 
+  it("stores the country and city that the geo option reads from the request headers", async () => {
+    const created: Record<string, unknown>[] = [];
+    const endpoint = analyticsEventsEndpoint({
+      enabled: true,
+      modules: modulesOn,
+      geo: (headers) => ({
+        country: headers.get("x-host-country"),
+        city: headers.get("x-host-city"),
+      }),
+    });
+
+    const response = await endpoint.handler(
+      payloadRequest(created, { "x-host-country": "ME", "x-host-city": "Tivat" }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(created[0]).toMatchObject({ country: "ME", city: "Tivat" });
+  });
+
+  it("stores no country or city when the plugin has no geo option", async () => {
+    const created: Record<string, unknown>[] = [];
+    const endpoint = analyticsEventsEndpoint({ enabled: true, modules: modulesOn });
+
+    await endpoint.handler(payloadRequest(created, { "x-host-country": "ME" }));
+
+    expect(created[0]).toMatchObject({ country: null, city: null });
+  });
+
   it("registers a POST endpoint at /analytics/events", () => {
     const endpoint = analyticsEventsEndpoint({ enabled: true, modules: modulesOn });
     expect(endpoint.method).toBe("post");
     expect(endpoint.path).toBe("/analytics/events");
   });
 });
+
+function payloadRequest(
+  created: Record<string, unknown>[],
+  headers: Record<string, string>,
+): PayloadRequest {
+  const payload = {
+    create: async ({ data }: { data: Record<string, unknown> }) => {
+      created.push(data);
+      return { id: created.length, ...data };
+    },
+  };
+  return {
+    payload: payload as unknown as Payload,
+    headers: new Headers(headers),
+    json: async () => ({ type: "view", path: "/", locale: "en", sessionId: null }),
+  } as unknown as PayloadRequest;
+}

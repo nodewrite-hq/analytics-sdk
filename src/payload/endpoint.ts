@@ -1,5 +1,5 @@
 import type { Endpoint, PayloadRequest } from "payload";
-import type { AnalyticsServerOptions } from "../core/options.js";
+import type { AnalyticsServerOptions, ReadGeoFromHeaders, RequestGeo } from "../core/options.js";
 import type { RecordAnalyticsEventDeps } from "../server/record-analytics-event.js";
 import { recordAnalyticsEvent } from "../server/record-analytics-event.js";
 import { PayloadAnalyticsEventStore } from "./store.js";
@@ -7,7 +7,17 @@ import { PayloadAnalyticsEventStore } from "./store.js";
 export interface AnalyticsEndpointRequest {
   body: unknown;
   headers: Headers | Record<string, string | string[] | undefined>;
+  /** From the host, never from the body. Null when unknown. */
+  country?: string | null;
+  city?: string | null;
 }
+
+export interface AnalyticsEndpointOptions extends AnalyticsServerOptions {
+  /** Without it, the country and city modules store null. */
+  geo?: ReadGeoFromHeaders;
+}
+
+const NO_GEO: RequestGeo = { country: null, city: null };
 
 /**
  * Builds the plain request recordAnalyticsEvent already accepts.
@@ -18,7 +28,12 @@ export async function handleAnalyticsEvent(
   deps: RecordAnalyticsEventDeps,
 ): Promise<Response> {
   const result = await recordAnalyticsEvent(
-    { body: request.body, headers: headerRecord(request.headers) },
+    {
+      body: request.body,
+      headers: headerRecord(request.headers),
+      country: request.country ?? null,
+      city: request.city ?? null,
+    },
     deps,
   );
   if (result.status === 204 || result.body === null) {
@@ -27,7 +42,7 @@ export async function handleAnalyticsEvent(
   return Response.json(result.body, { status: result.status });
 }
 
-export function analyticsEventsEndpoint(options: AnalyticsServerOptions): Endpoint {
+export function analyticsEventsEndpoint(options: AnalyticsEndpointOptions): Endpoint {
   return {
     path: "/analytics/events",
     method: "post",
@@ -37,7 +52,7 @@ export function analyticsEventsEndpoint(options: AnalyticsServerOptions): Endpoi
 
 async function handlePayloadAnalyticsEvent(
   req: PayloadRequest,
-  options: AnalyticsServerOptions,
+  options: AnalyticsEndpointOptions,
 ): Promise<Response> {
   const store = new PayloadAnalyticsEventStore(req.payload, options.modules);
   let body: unknown;
@@ -46,7 +61,11 @@ async function handlePayloadAnalyticsEvent(
   } catch {
     body = undefined;
   }
-  return handleAnalyticsEvent({ body, headers: req.headers }, { store, options });
+  const geo = options.geo ? options.geo(req.headers) : NO_GEO;
+  return handleAnalyticsEvent(
+    { body, headers: req.headers, country: geo.country, city: geo.city },
+    { store, options },
+  );
 }
 
 function headerRecord(

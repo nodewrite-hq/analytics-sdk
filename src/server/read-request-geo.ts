@@ -1,7 +1,6 @@
-export interface RequestGeo {
-  country: string | null;
-  city: string | null;
-}
+import type { RequestGeo } from "../core/options.js";
+
+export type { RequestGeo };
 
 /** Reads `country` and `city` from the request object the app passed in. */
 export function readRequestGeo(request: object): RequestGeo {

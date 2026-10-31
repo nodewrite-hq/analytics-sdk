@@ -75,6 +75,27 @@ const result = await recordAnalyticsEvent(
 
 `enabled: false` writes nothing and returns status 204. A stored view or click returns status 200 and `{ id }`. A recorded duration returns 204. An event that cannot be stored returns 400.
 
+## Payload
+
+`analyticsPlugin` adds the hidden `analytics-events` collection, the ingest endpoint at `/analytics/events` under the Payload API route (`/api/analytics/events` by default), and an admin screen at `/analytics` under the admin route. The nav link follows `routes.admin`.
+
+The package names no host's geo headers. Pass `geo` to read country and city from the request headers your host sets. Without `geo`, the country and city modules store null.
+
+```ts
+import { analyticsPlugin } from "@nodewrite-labs/analytics-sdk/payload";
+
+analyticsPlugin({
+  enabled: true,
+  modules: { country: true, city: false, sessions: false, clicks: true },
+  // Vercel, for example. Cloudflare sends `cf-ipcountry`.
+  geo: (headers) => ({ country: headers.get("x-vercel-ip-country"), city: null }),
+});
+```
+
+The browser then posts to the Payload endpoint: `startAnalytics({ endpoint: "/api/analytics/events", … })`.
+
+The plugin adds a collection, so a Payload project with migrations needs a new one (`payload migrate:create`).
+
 ## Store
 
 `AnalyticsEventStore` is three methods: `insertAnalyticsEvent`, `recordAnalyticsDuration`, and `summarizeAnalytics`.

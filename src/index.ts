@@ -3,6 +3,8 @@ export type {
   AnalyticsClientConfig,
   AnalyticsModules,
   AnalyticsServerOptions,
+  ReadGeoFromHeaders,
+  RequestGeo,
 } from "./core/options.js";
 export type { NewAnalyticsEvent, StoredAnalyticsEvent } from "./core/event.js";
 export type { AnalyticsEventBody } from "./core/event-body.js";
