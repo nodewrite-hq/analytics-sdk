@@ -12,4 +12,13 @@ export type { AnalyticsSummary, AnalyticsSummaryQuery } from "./core/summary.js"
 export type { AnalyticsEventStore } from "./core/event-store.js";
 export { acceptDurationSeconds } from "./core/duration-seconds.js";
 export { summarizeAnalyticsEvents } from "./core/summarize-events.js";
+export {
+  ANALYTICS_PERIODS,
+  type AnalyticsBucket,
+  AnalyticsBucketUnit,
+  AnalyticsPeriod,
+  type AnalyticsPeriodRange,
+  analyticsPeriodRange,
+  DEFAULT_ANALYTICS_PERIOD,
+} from "./core/period.js";
 export { MemoryAnalyticsEventStore } from "./core/memory-event-store.js";

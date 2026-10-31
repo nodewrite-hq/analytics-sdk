@@ -184,6 +184,8 @@ async function postJson(url: string, body: AnalyticsEventBody): Promise<JsonResp
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
+    // A tel: or mailto: click can hand the page to another app before the request finishes.
+    keepalive: true,
   });
 }
 

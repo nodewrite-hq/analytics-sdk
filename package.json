@@ -1,6 +1,6 @@
 {
   "name": "@nodewrite-labs/analytics-sdk",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Analytics SDK for page views and named clicks, with Postgres storage and a Payload admin screen.",
   "publishConfig": {
     "access": "public"
@@ -43,6 +43,10 @@
     "./payload/nav-link": {
       "types": "./dist/payload/nav-link.d.ts",
       "import": "./dist/payload/nav-link.js"
+    },
+    "./payload/admin-filters": {
+      "types": "./dist/payload/admin-filters.d.ts",
+      "import": "./dist/payload/admin-filters.js"
     }
   },
   "files": [
@@ -53,15 +57,27 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "build": "tsup"
+    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsup"
   },
   "peerDependencies": {
     "@payloadcms/next": "*",
+    "@payloadcms/ui": "*",
+    "next": "*",
     "payload": "*",
-    "pg": "*"
+    "pg": "*",
+    "react": "*"
   },
   "peerDependenciesMeta": {
     "@payloadcms/next": {
+      "optional": true
+    },
+    "@payloadcms/ui": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    },
+    "react": {
       "optional": true
     },
     "payload": {
@@ -73,18 +89,25 @@
   },
   "devDependencies": {
     "@payloadcms/next": "3.92.0",
+    "@payloadcms/ui": "3.92.0",
     "@types/node": "^22.20.5",
     "@types/pg": "^8.23.1",
     "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
     "esbuild": "^0.28.2",
     "graphql": "^16.14.2",
     "jsdom": "^30.1.3",
+    "next": "16.3.3",
     "payload": "3.92.0",
     "pg": "^8.23.1",
     "react": "^19.3.1",
+    "react-dom": "19.3.1",
     "tsup": "^9.0.0",
     "typescript": "6.0.3",
     "vite": "^8.3.5",
     "vitest": "^5.0.5"
+  },
+  "dependencies": {
+    "country-flag-icons": "1.6.20"
   }
 }

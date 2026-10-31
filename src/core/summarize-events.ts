@@ -1,6 +1,7 @@
 import { AnalyticsEventKind } from "./event-kind.js";
 import type { StoredAnalyticsEvent } from "./event.js";
 import type { AnalyticsModules } from "./options.js";
+import type { AnalyticsBucket } from "./period.js";
 import type { AnalyticsSummary, AnalyticsSummaryQuery } from "./summary.js";
 
 export function summarizeAnalyticsEvents(
@@ -16,6 +17,10 @@ export function summarizeAnalyticsEvents(
     averageDurationSeconds: meanDuration(views),
     byPath: groupByPath(views),
   };
+
+  if (query.buckets) {
+    summary.viewsOverTime = countViewsByBucket(views, query.buckets);
+  }
 
   if (modules.country) {
     summary.byCountry = groupByCountry(views);
@@ -63,6 +68,21 @@ function meanDuration(views: readonly StoredAnalyticsEvent[]): number {
   }
   if (count === 0) return 0;
   return total / count;
+}
+
+function countViewsByBucket(
+  views: readonly StoredAnalyticsEvent[],
+  buckets: readonly AnalyticsBucket[],
+): NonNullable<AnalyticsSummary["viewsOverTime"]> {
+  const counts = buckets.map(() => 0);
+  const ends = buckets.map((bucket) => Date.parse(bucket.end));
+  const starts = buckets.map((bucket) => Date.parse(bucket.start));
+  for (const view of views) {
+    const at = Date.parse(view.occurredAt);
+    const index = starts.findIndex((start, position) => at >= start && at < (ends[position] ?? start));
+    if (index >= 0) counts[index] = (counts[index] ?? 0) + 1;
+  }
+  return buckets.map((bucket, index) => ({ start: bucket.start, views: counts[index] ?? 0 }));
 }
 
 function groupByPath(views: readonly StoredAnalyticsEvent[]): AnalyticsSummary["byPath"] {

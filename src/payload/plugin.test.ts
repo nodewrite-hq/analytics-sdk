@@ -79,4 +79,49 @@ describe("analyticsPlugin", () => {
       },
     ]);
   });
+
+  it("puts the report's filters in the import map and keeps other dependencies", () => {
+    const next = analyticsPlugin({ enabled: true, modules })({
+      admin: { dependencies: { existing: { type: "component", path: "app/existing#Existing" } } },
+    } as unknown as Config);
+
+    expect(next.admin?.dependencies).toEqual({
+      existing: { type: "component", path: "app/existing#Existing" },
+      nodewriteAnalyticsFilters: {
+        type: "component",
+        path: "@nodewrite-labs/analytics-sdk/payload/admin-filters#AnalyticsFilters",
+      },
+    });
+  });
+
+  it("stores the time zone and format locales for the report, UTC by default", () => {
+    const zoned = analyticsPlugin({
+      enabled: true,
+      modules,
+      timeZone: "Europe/Podgorica",
+      formatLocales: { "rs-latin": "sr-Latn" },
+    })({} as Config);
+    expect(zoned.custom).toMatchObject({
+      analytics: { timeZone: "Europe/Podgorica", formatLocales: { "rs-latin": "sr-Latn" } },
+    });
+
+    const plain = analyticsPlugin({ enabled: true, modules })({} as Config);
+    expect(plain.custom).toMatchObject({ analytics: { timeZone: "UTC", formatLocales: {} } });
+  });
+
+  it("refuses an unknown time zone when the plugin is set up", () => {
+    expect(() => analyticsPlugin({ enabled: true, modules, timeZone: "Nowhere/Town" })).toThrow(RangeError);
+  });
+
+  it("adds the host's labels to the admin translations", () => {
+    const next = analyticsPlugin({
+      enabled: true,
+      modules,
+      translations: { "rs-latin": { title: "Analitika" } },
+    })({ i18n: { supportedLanguages: { "rs-latin": {} } } } as unknown as Config);
+    const translations = next.i18n?.translations as Record<string, Record<string, Record<string, string>>>;
+
+    expect(translations["rs-latin"]?.analytics?.title).toBe("Analitika");
+    expect(translations.en?.analytics?.title).toBe("Analytics");
+  });
 });

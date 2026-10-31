@@ -1,4 +1,5 @@
 import type { AnalyticsEventKind } from "./event-kind.js";
+import type { AnalyticsBucket } from "./period.js";
 
 export interface AnalyticsSummaryQuery {
   from: string;
@@ -6,11 +7,17 @@ export interface AnalyticsSummaryQuery {
   country: string | null;
   path: string | null;
   sessionId: string | null;
+  /** When set, the summary counts views per bucket in `viewsOverTime`. */
+  buckets?: readonly AnalyticsBucket[];
 }
 
 export interface AnalyticsSummary {
   totalViews: number;
   averageDurationSeconds: number;
+  viewsOverTime?: {
+    start: string;
+    views: number;
+  }[];
   byPath: {
     path: string;
     views: number;
