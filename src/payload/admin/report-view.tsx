@@ -62,7 +62,7 @@ export function AnalyticsReportView(props: AnalyticsReportViewProps) {
           toggleHref={href({ showAllPages: !query.showAllPages })}
         />
         {modules.country ? <CountriesTable {...tableProps} countryHref={(country) => href({ country })} /> : null}
-        {modules.clicks ? <ClicksTable {...tableProps} eventLabel={eventLabel} /> : null}
+        {hasClicks(report) ? <ClicksTable {...tableProps} eventLabel={eventLabel} /> : null}
         {modules.city ? <CitiesTable {...tableProps} /> : null}
       </div>
       {modules.sessions ? (
@@ -77,13 +77,18 @@ export function AnalyticsReportView(props: AnalyticsReportViewProps) {
   );
 }
 
+/** Clicks stay off the screen until at least one named click was stored. */
+function hasClicks(report: AnalyticsReport): boolean {
+  return (report.clicks ?? []).some((row) => row.count > 0);
+}
+
 function Totals({ report, label, format }: { report: AnalyticsReport; label: ReportLabel; format: ReportFormat }) {
   const stats = [
     { key: "views", name: label("views"), value: format.number(report.totals.views) },
     { key: "time", name: label("averageTime"), value: format.duration(report.totals.averageDurationSeconds) },
   ];
-  if (report.totals.clicks !== null) {
-    stats.push({ key: "clicks", name: label("clicks"), value: format.number(report.totals.clicks) });
+  if (hasClicks(report)) {
+    stats.push({ key: "clicks", name: label("clicks"), value: format.number(report.totals.clicks ?? 0) });
   }
 
   return (

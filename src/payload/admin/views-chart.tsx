@@ -6,6 +6,8 @@ const PAD_TOP = 12;
 const PAD_BOTTOM = 28;
 const GRID_LINES = 4;
 const MAX_AXIS_LABELS = 8;
+const TIP_HEIGHT = 40;
+const TIP_GAP = 8;
 
 export interface ViewsChartPoint {
   label: string;
@@ -45,18 +47,30 @@ export function ViewsChart({ points, formatNumber, description }: ViewsChartProp
       ))}
       {points.length > 0 ? <path className="nwa-chart__area" d={area} /> : null}
       {points.length > 0 ? <path className="nwa-chart__line" d={line} /> : null}
-      {points.map((point, index) => (
-        <g key={`${point.label}-${index}`}>
-          <circle className="nwa-chart__point" cx={x(index)} cy={y(point.views)} r={points.length > 31 ? 2 : 3.5}>
-            <title>{point.title}</title>
-          </circle>
-          {index % labelEvery === 0 ? (
-            <text className="nwa-chart__axis" x={x(index)} y={HEIGHT - 8} textAnchor="middle">
-              {point.label}
-            </text>
-          ) : null}
-        </g>
-      ))}
+      {points.map((point, index) => {
+        const cx = x(index);
+        const cy = y(point.views);
+        const count = formatNumber(point.views);
+        const tip = placeTip(cx, cy, tipWidth(point.label, count));
+        const slice = hitSlice(index, points.length, step);
+        return (
+          <g key={`${point.label}-${index}`} className="nwa-chart__day" aria-label={point.title}>
+            <rect className="nwa-chart__day-hit" x={slice.x} y={PAD_TOP} width={slice.width} height={plotHeight} />
+            <line className="nwa-chart__guide" x1={cx} x2={cx} y1={PAD_TOP} y2={PAD_TOP + plotHeight} />
+            <circle className="nwa-chart__point" cx={cx} cy={cy} r={points.length > 31 ? 2 : 3.5} />
+            {index % labelEvery === 0 ? (
+              <text className="nwa-chart__axis" x={cx} y={HEIGHT - 8} textAnchor="middle">
+                {point.label}
+              </text>
+            ) : null}
+            <g className="nwa-chart__tip" transform={`translate(${tip.x},${tip.y})`}>
+              <rect className="nwa-chart__tip-bg" width={tip.width} height={TIP_HEIGHT} rx={4} />
+              <text className="nwa-chart__tip-day" x={8} y={16}>{point.label}</text>
+              <text className="nwa-chart__tip-count" x={8} y={32}>{count}</text>
+            </g>
+          </g>
+        );
+      })}
     </svg>
   );
 }
@@ -74,4 +88,26 @@ function niceCeiling(value: number): number {
 
 function gridValues(top: number): number[] {
   return Array.from({ length: GRID_LINES + 1 }, (_, index) => (top / GRID_LINES) * index);
+}
+
+/** The day's column, split at the midpoints so neighboring days do not share a hover. */
+function hitSlice(index: number, count: number, step: number): { x: number; width: number } {
+  if (count <= 1) return { x: PAD_LEFT, width: WIDTH - PAD_LEFT - PAD_RIGHT };
+  const center = PAD_LEFT + index * step;
+  const left = index === 0 ? PAD_LEFT : center - step / 2;
+  const right = index === count - 1 ? WIDTH - PAD_RIGHT : center + step / 2;
+  return { x: left, width: right - left };
+}
+
+function tipWidth(day: string, count: string): number {
+  const longest = Math.max(day.length, count.length);
+  return Math.max(64, Math.ceil(longest * 7.2) + 16);
+}
+
+/** Above the point, or below it when the point sits near the top. Stays inside the chart. */
+function placeTip(cx: number, cy: number, width: number): { x: number; y: number; width: number } {
+  const x = Math.min(Math.max(4, cx - width / 2), WIDTH - width - 4);
+  const above = cy - TIP_HEIGHT - TIP_GAP;
+  const y = above >= 4 ? above : Math.min(cy + TIP_GAP, HEIGHT - TIP_HEIGHT - 4);
+  return { x, y, width };
 }

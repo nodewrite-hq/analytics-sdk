@@ -67,7 +67,30 @@ describe("AnalyticsReportView", () => {
     expect(html).toContain('src="data:image/svg+xml');
     expect(html).toContain("Phone calls");
     expect(html).toContain("<svg");
+    expect(html).toContain("Oct 30");
+    expect(html).toContain("Oct 31");
+    expect(html).toContain('class="nwa-chart__tip-count" x="8" y="32">4</text>');
+    expect(html).toContain('class="nwa-chart__tip-count" x="8" y="32">9</text>');
     expect(html).toContain('data-testid="filters"');
+  });
+
+  it("leaves clicks out when nothing was clicked", () => {
+    const html = renderToStaticMarkup(
+      <AnalyticsReportView
+        report={{ ...report, totals: { ...report.totals, clicks: 0 }, clicks: [] }}
+        query={query}
+        modules={modules}
+        viewHref="/administrator/analytics"
+        label={label}
+        format={reportFormat("en", "Europe/Podgorica", AnalyticsBucketUnit.DAY)}
+        eventLabel={(eventName) => eventName}
+        filters={null}
+      />,
+    );
+
+    expect(html).not.toContain("Clicks");
+    expect(html).not.toContain("Phone calls");
+    expect(html).toContain("1,234");
   });
 
   it("shows the page filter with a link that clears it", () => {

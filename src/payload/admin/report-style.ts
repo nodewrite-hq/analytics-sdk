@@ -102,10 +102,55 @@ export const REPORT_STYLE = `
   fill: var(--theme-success-500);
   opacity: 0.12;
 }
+.nwa-chart__area,
+.nwa-chart__line,
+.nwa-chart__guide {
+  pointer-events: none;
+}
+.nwa-chart__day-hit {
+  fill: transparent;
+  cursor: crosshair;
+}
+.nwa-chart__guide {
+  stroke: var(--theme-elevation-250);
+  stroke-dasharray: 3 3;
+  opacity: 0;
+}
 .nwa-chart__point {
   fill: var(--theme-elevation-0);
   stroke: var(--theme-success-500);
   stroke-width: 2;
+}
+.nwa-chart__day:hover .nwa-chart__guide,
+.nwa-chart__day:focus-within .nwa-chart__guide {
+  opacity: 1;
+}
+.nwa-chart__day:hover .nwa-chart__point,
+.nwa-chart__day:focus-within .nwa-chart__point {
+  fill: var(--theme-success-500);
+}
+.nwa-chart__tip {
+  opacity: 0;
+  pointer-events: none;
+}
+.nwa-chart__day:hover .nwa-chart__tip,
+.nwa-chart__day:focus-within .nwa-chart__tip {
+  opacity: 1;
+  pointer-events: auto;
+}
+.nwa-chart__tip-bg {
+  fill: var(--theme-elevation-0);
+  stroke: var(--theme-elevation-200);
+}
+.nwa-chart__tip-day {
+  fill: var(--theme-elevation-500);
+  font-size: 11px;
+}
+.nwa-chart__tip-count {
+  fill: var(--theme-elevation-800);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 .nwa-table {
   width: 100%;
