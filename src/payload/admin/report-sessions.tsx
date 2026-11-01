@@ -1,6 +1,7 @@
 import { AnalyticsEventKind } from "../../core/event-kind.js";
 import type { ReportFormat } from "./format.js";
 import type { AnalyticsReport } from "./report.js";
+import { ReportLink } from "./report-link.js";
 import { RankedTable, type ReportLabel } from "./report-tables.js";
 
 interface SessionsProps {
@@ -30,9 +31,9 @@ export function SessionsSection({ report, label, format, sessionHref, allSession
           ],
         }))}
         footer={
-          <a className="nwa-more" href={allSessionsHref}>
+          <ReportLink className="nwa-more" href={allSessionsHref}>
             {label("allSessions")}
-          </a>
+          </ReportLink>
         }
       />
     );

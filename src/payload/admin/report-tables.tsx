@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { CountryFlag } from "./country-flag.js";
 import type { ReportFormat } from "./format.js";
 import type { AnalyticsReport } from "./report.js";
+import { ReportLink } from "./report-link.js";
 import type { AnalyticsLabelKey } from "./translations.js";
 
 export type ReportLabel = (key: AnalyticsLabelKey, vars?: Record<string, unknown>) => string;
@@ -22,14 +23,17 @@ interface RankedTableProps {
   columns: string[];
   rows: RankedRow[];
   empty: string;
+  /** Controls between the title and the table, such as a search field. */
+  toolbar?: ReactNode;
   footer?: ReactNode;
 }
 
-export function RankedTable({ title, columns, rows, empty, footer }: RankedTableProps) {
+export function RankedTable({ title, columns, rows, empty, toolbar, footer }: RankedTableProps) {
   const [nameColumn, ...valueColumns] = columns;
   return (
     <section className="nwa-card">
       <h2>{title}</h2>
+      {toolbar}
       {rows.length === 0 ? (
         <p className="nwa-empty">{empty}</p>
       ) : (
@@ -52,9 +56,9 @@ export function RankedTable({ title, columns, rows, empty, footer }: RankedTable
                   style={row.share === undefined ? undefined : ({ "--nwa-share": row.share } as CSSProperties)}
                 >
                   {row.href ? (
-                    <a className="nwa-name" href={row.href}>
+                    <ReportLink className="nwa-name" href={row.href}>
                       {row.name}
-                    </a>
+                    </ReportLink>
                   ) : (
                     <span className="nwa-name">{row.name}</span>
                   )}
@@ -74,41 +78,10 @@ export function RankedTable({ title, columns, rows, empty, footer }: RankedTable
   );
 }
 
-interface TableProps {
+export interface TableProps {
   report: AnalyticsReport;
   label: ReportLabel;
   format: ReportFormat;
-}
-
-export function PagesTable({
-  report,
-  label,
-  format,
-  pageHref,
-  toggleHref,
-  showAll,
-}: TableProps & { pageHref: (path: string) => string; toggleHref: string; showAll: boolean }) {
-  return (
-    <RankedTable
-      title={label(showAll ? "allPages" : "topPages")}
-      columns={[label("page"), label("views"), label("averageTime")]}
-      empty={label("empty")}
-      rows={report.pages.map((page) => ({
-        key: page.path,
-        name: page.path,
-        href: pageHref(page.path),
-        share: page.share,
-        values: [format.number(page.views), format.duration(page.averageDurationSeconds)],
-      }))}
-      footer={
-        report.hasMorePages ? (
-          <a className="nwa-more" href={toggleHref}>
-            {label(showAll ? "showTopPages" : "showAllPages")}
-          </a>
-        ) : null
-      }
-    />
-  );
 }
 
 export function CountriesTable({

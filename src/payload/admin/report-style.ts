@@ -215,6 +215,50 @@ a.nwa-name:hover {
   margin-top: calc(var(--base) * 0.6);
   color: var(--theme-elevation-800);
 }
+.nwa-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--base) * 0.6);
+  align-items: end;
+  margin-bottom: calc(var(--base) * 0.6);
+}
+.nwa-search {
+  display: flex;
+  flex: 1 1 14rem;
+  flex-direction: column;
+  gap: calc(var(--base) * 0.2);
+}
+.nwa-search__input {
+  width: 100%;
+  padding: calc(var(--base) * 0.4) calc(var(--base) * 0.6);
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s);
+  background: var(--theme-input-bg);
+  color: var(--theme-text);
+  font: inherit;
+}
+.nwa-search__input:focus {
+  border-color: var(--theme-elevation-400);
+  outline: none;
+}
+.nwa-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--base) * 0.6);
+  align-items: baseline;
+  justify-content: space-between;
+}
+.nwa-pager {
+  display: flex;
+  gap: calc(var(--base) * 0.6);
+  align-items: baseline;
+  margin-top: calc(var(--base) * 0.6);
+  color: var(--theme-elevation-500);
+  font-variant-numeric: tabular-nums;
+}
+.nwa-pager a {
+  color: var(--theme-elevation-800);
+}
 .nwa-empty {
   margin: 0;
   color: var(--theme-elevation-500);

@@ -3,3 +3,8 @@ export const ANALYTICS_FILTERS_PATH = "@nodewrite-labs/analytics-sdk/payload/adm
 
 /** The `admin.dependencies` key that puts the filters into the host's import map. */
 export const ANALYTICS_FILTERS_DEPENDENCY = "nodewriteAnalyticsFilters";
+
+export const ANALYTICS_PAGE_SEARCH_PATH =
+  "@nodewrite-labs/analytics-sdk/payload/admin-filters#AnalyticsPageSearch";
+
+export const ANALYTICS_PAGE_SEARCH_DEPENDENCY = "nodewriteAnalyticsPageSearch";

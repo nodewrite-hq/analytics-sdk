@@ -7,11 +7,11 @@ import { ANALYTICS_PERIODS, analyticsPeriodRange } from "../../core/period.js";
 import { ANALYTICS_EVENTS_SLUG } from "../collection.js";
 import { PayloadAnalyticsEventStore } from "../store.js";
 import { type AnalyticsAdminSettings, analyticsAdminSettingsFromConfig } from "../stored-modules.js";
-import { ANALYTICS_FILTERS_PATH } from "./component-paths.js";
-import type { AnalyticsFilter, AnalyticsFiltersProps } from "./filters.js";
+import { ANALYTICS_FILTERS_PATH, ANALYTICS_PAGE_SEARCH_PATH } from "./component-paths.js";
+import type { AnalyticsFilter, AnalyticsFiltersProps, AnalyticsPageSearchProps } from "./filters.js";
 import { type ReportFormat, reportFormat, resolveFormatLocale } from "./format.js";
 import { type AnalyticsReport, buildAnalyticsReport } from "./report.js";
-import { type AnalyticsReportQuery, parseReportQuery, reportHref } from "./report-query.js";
+import { type AnalyticsReportQuery, parseReportQuery, ReportParam, reportHref } from "./report-query.js";
 import type { ReportLabel } from "./report-tables.js";
 import { AnalyticsReportView } from "./report-view.js";
 import { analyticsEventLabel, analyticsLabel, type TranslateText } from "./translations.js";
@@ -19,6 +19,7 @@ import { analyticsEventLabel, analyticsLabel, type TranslateText } from "./trans
 const ANALYTICS_VIEW_PATH = "/analytics";
 const PERIOD_FILTER_ID = "nwa-period";
 const COUNTRY_FILTER_ID = "nwa-country";
+const PAGE_SEARCH_ID = "nwa-page-search";
 /** The country dropdown's "all countries" option; never a country code. */
 const ALL_COUNTRIES = "all";
 
@@ -40,6 +41,13 @@ export async function AnalyticsAdminView(props: AdminViewServerProps) {
   const viewHref = `${payload.config.routes.admin}${ANALYTICS_VIEW_PATH}`;
   const filters: AnalyticsFiltersProps = {
     filters: reportFilters({ query, report, viewHref, label, format, hasCountries: settings.modules.country }),
+  };
+  const pageSearch: AnalyticsPageSearchProps = {
+    id: PAGE_SEARCH_ID,
+    label: label("searchPages"),
+    value: query.pageSearch,
+    baseHref: reportHref(viewHref, query, { pageSearch: null, pageListPage: 1 }),
+    param: ReportParam.PAGE_SEARCH,
   };
 
   return (
@@ -69,6 +77,11 @@ export async function AnalyticsAdminView(props: AdminViewServerProps) {
             importMap: payload.importMap,
             clientProps: filters,
           })}
+          pageSearch={RenderServerComponent({
+            Component: ANALYTICS_PAGE_SEARCH_PATH,
+            importMap: payload.importMap,
+            clientProps: pageSearch,
+          })}
         />
       </Gutter>
     </DefaultTemplate>
@@ -91,7 +104,13 @@ async function loadReport(
     query.country === null
       ? summary
       : await store.summarizeAnalytics({ ...base, country: null }, settings.modules);
-  return buildAnalyticsReport({ summary, periodSummary, modules: settings.modules, query });
+  return buildAnalyticsReport({
+    summary,
+    periodSummary,
+    modules: settings.modules,
+    query,
+    localePrefixes: settings.localePrefixes,
+  });
 }
 
 interface ReportFiltersInput {

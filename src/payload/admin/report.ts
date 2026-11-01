@@ -1,8 +1,7 @@
 import type { AnalyticsModules } from "../../core/options.js";
 import type { AnalyticsSummary } from "../../core/summary.js";
+import { type PageListPosition, pageList, type SectionRow, summarizeSections } from "./page-list.js";
 import type { AnalyticsReportQuery } from "./report-query.js";
-
-export const TOP_PAGES_COUNT = 5;
 
 export interface ReportRow {
   views: number;
@@ -20,6 +19,10 @@ export interface AnalyticsReport {
   viewsOverTime: { start: string; views: number }[];
   pages: (ReportRow & { path: string; averageDurationSeconds: number })[];
   hasMorePages: boolean;
+  /** Null for the top pages; where the full, filtered list stands when it is shown. */
+  pageList: PageListPosition | null;
+  /** Views per section of the site (`/news`), most viewed first. */
+  sections: (ReportRow & SectionRow)[];
   /** Null when the country module is off. */
   countries: (ReportRow & { country: string })[] | null;
   /** Countries with views in the period, whatever the country filter, most views first. */
@@ -36,16 +39,30 @@ export interface BuildAnalyticsReportInput {
   periodSummary: AnalyticsSummary;
   modules: AnalyticsModules;
   query: AnalyticsReportQuery;
+  /** Locale path prefixes (`en`) that start a section of their own language. */
+  localePrefixes?: readonly string[];
 }
 
-/** Orders and trims the summary for the screen: most viewed first, top pages unless all are asked for. */
+/**
+ * Orders and trims the summary for the screen: most viewed first, the top pages unless the full
+ * list is asked for, then one page of it, narrowed by section and search.
+ */
 export function buildAnalyticsReport({
   summary,
   periodSummary,
   modules,
   query,
+  localePrefixes = [],
 }: BuildAnalyticsReportInput): AnalyticsReport {
   const pages = withShares(byViews(summary.byPath, (row) => row.path));
+  const list = pageList({
+    pages,
+    showAll: query.showAllPages,
+    section: query.section,
+    search: query.pageSearch,
+    page: query.pageListPage,
+    localePrefixes,
+  });
   const clicks = modules.clicks
     ? [...(summary.byEventName ?? [])].sort(
         (left, right) => right.count - left.count || compare(left.eventName, right.eventName),
@@ -59,8 +76,10 @@ export function buildAnalyticsReport({
       clicks: clicks ? clicks.reduce((total, row) => total + row.count, 0) : null,
     },
     viewsOverTime: summary.viewsOverTime ?? [],
-    pages: query.showAllPages ? pages : pages.slice(0, TOP_PAGES_COUNT),
-    hasMorePages: pages.length > TOP_PAGES_COUNT,
+    pages: list.rows,
+    hasMorePages: list.hasMore,
+    pageList: list.position,
+    sections: withShares(summarizeSections(pages, localePrefixes)),
     countries: modules.country ? withShares(byViews(summary.byCountry ?? [], (row) => row.country)) : null,
     countryOptions: modules.country
       ? byViews(periodSummary.byCountry ?? [], (row) => row.country).map((row) => row.country)

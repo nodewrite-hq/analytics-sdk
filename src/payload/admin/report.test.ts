@@ -12,6 +12,9 @@ const query: AnalyticsReportQuery = {
   path: null,
   session: null,
   showAllPages: false,
+  section: null,
+  pageSearch: null,
+  pageListPage: 1,
 };
 
 function summary(overrides: Partial<AnalyticsSummary> = {}): AnalyticsSummary {
@@ -51,6 +54,39 @@ describe("buildAnalyticsReport", () => {
     });
 
     expect(report.pages).toHaveLength(7);
+    expect(report.pageList).toEqual({ page: 1, pageCount: 1, from: 1, to: 7, total: 7 });
+  });
+
+  it("narrows the full list by section or search and sums views per section", () => {
+    const current = summary({
+      byPath: [
+        { path: "/", views: 9, averageDurationSeconds: 10 },
+        { path: "/news/olive-harvest", views: 6, averageDurationSeconds: 10 },
+        { path: "/news/pruning", views: 4, averageDurationSeconds: 10 },
+        { path: "/recipes/bread", views: 3, averageDurationSeconds: 10 },
+        { path: "/en/news/olive-harvest", views: 2, averageDurationSeconds: 10 },
+      ],
+    });
+    const build = (changes: Partial<AnalyticsReportQuery>) =>
+      buildAnalyticsReport({
+        summary: current,
+        periodSummary: current,
+        modules,
+        query: { ...query, showAllPages: true, ...changes },
+        localePrefixes: ["en"],
+      });
+
+    expect(build({ section: "/news" }).pages.map((page) => page.path)).toEqual(["/news/olive-harvest", "/news/pruning"]);
+    expect(build({ pageSearch: "HARVEST" }).pages.map((page) => page.path)).toEqual([
+      "/news/olive-harvest",
+      "/en/news/olive-harvest",
+    ]);
+    expect(build({}).sections.map(({ section, views, pageCount }) => [section, views, pageCount])).toEqual([
+      ["/news", 10, 2],
+      ["/", 9, 1],
+      ["/recipes", 3, 1],
+      ["/en/news", 2, 1],
+    ]);
   });
 
   it("offers only countries with views in the period, even with a country chosen", () => {

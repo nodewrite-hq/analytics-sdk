@@ -91,6 +91,10 @@ describe("analyticsPlugin", () => {
         type: "component",
         path: "@nodewrite-labs/analytics-sdk/payload/admin-filters#AnalyticsFilters",
       },
+      nodewriteAnalyticsPageSearch: {
+        type: "component",
+        path: "@nodewrite-labs/analytics-sdk/payload/admin-filters#AnalyticsPageSearch",
+      },
     });
   });
 

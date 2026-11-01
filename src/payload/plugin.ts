@@ -1,6 +1,11 @@
 import type { Access, Config } from "payload";
 import { assertTimeZone } from "../core/period.js";
-import { ANALYTICS_FILTERS_DEPENDENCY, ANALYTICS_FILTERS_PATH } from "./admin/component-paths.js";
+import {
+  ANALYTICS_FILTERS_DEPENDENCY,
+  ANALYTICS_FILTERS_PATH,
+  ANALYTICS_PAGE_SEARCH_DEPENDENCY,
+  ANALYTICS_PAGE_SEARCH_PATH,
+} from "./admin/component-paths.js";
 import { type AnalyticsTranslations, withAnalyticsTranslations } from "./admin/translations.js";
 import { analyticsEventsCollection } from "./collection.js";
 import { type AnalyticsEndpointOptions, analyticsEventsEndpoint } from "./endpoint.js";
@@ -24,6 +29,11 @@ export interface AnalyticsPluginOptions extends AnalyticsEndpointOptions {
    * Payload code is not one (`rs-latin` → `sr-Latn`). Others use Payload's date locale.
    */
   formatLocales?: Record<string, string>;
+  /**
+   * Path prefixes of the host's prefixed locales (`en` for `/en/...`). The pages report groups
+   * `/en/news` apart from `/news` instead of putting every English page under `/en`.
+   */
+  localePrefixes?: string[];
 }
 
 /**
@@ -38,6 +48,7 @@ export function analyticsPlugin(options: AnalyticsPluginOptions): (config: Confi
     modules: options.modules,
     timeZone,
     formatLocales: options.formatLocales ?? {},
+    localePrefixes: options.localePrefixes ?? [],
   };
 
   return (config) => {
@@ -54,6 +65,7 @@ export function analyticsPlugin(options: AnalyticsPluginOptions): (config: Confi
         dependencies: {
           ...admin.dependencies,
           [ANALYTICS_FILTERS_DEPENDENCY]: { type: "component", path: ANALYTICS_FILTERS_PATH },
+          [ANALYTICS_PAGE_SEARCH_DEPENDENCY]: { type: "component", path: ANALYTICS_PAGE_SEARCH_PATH },
         },
         components: {
           ...components,

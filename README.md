@@ -92,6 +92,8 @@ analyticsPlugin({
 });
 ```
 
+The admin screen shows the top 5 pages and the views per section (a path's first segment). "Show all pages" opens the full list, 25 rows at a time, with a search and a section filter; the screen changes in place, without a reload. A site with locale prefixes passes them as `localePrefixes: ["en"]`, so `/en/news/a` counts under `/en/news` rather than `/en`.
+
 The browser then posts to the Payload endpoint: `startAnalytics({ endpoint: "/api/analytics/events", … })`.
 
 The plugin adds a collection, so a Payload project with migrations needs a new one (`payload migrate:create`).
